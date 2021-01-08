@@ -4,6 +4,8 @@ const aliases = {
 	ink: "inkwaves",
 	john: "JohnDrinkin",
 	blu: "GuestCapone",
+	evil: "EvilArtist",
+	ivy: "Spectaqual",
 }
 
 const baseUrl = "https://www.roblox.com/catalog"
