@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>UGC Shortlink</title>
+	</head>
+
+	<body>
+		<form>
+			<input type="text" placeholder="Roblox Username" id="roblox-username">
+			<input type="text" placeholder="Search Query" id="search-query">
+			<br><br>
+			<b>Output URL:</b>
+			<span id="output"></span>
+		</form>
+
+		<script>
+			let robloxUsername = document.getElementById("roblox-username")
+			let searchQuery = document.getElementById("search-query")
+			let output = document.getElementById("output")
+
+			function getUrl() {
+				let url = "ugc.works"
+
+				if (robloxUsername.value.length > 0) {
+					url += `/${encodeURIComponent(robloxUsername.value)}`
+				} else {
+					return "Please enter username"
+				}
+
+				if (searchQuery.value.length > 0) {
+					url += `/${encodeURIComponent(searchQuery.value.replace(" ", "-"))}`
+				}
+
+				return url
+			}
+
+			function update() {
+				output.innerText = getUrl()
+			}
+
+			update()
+
+			robloxUsername.addEventListener("change", update)
+			searchQuery.addEventListener("change", update)
+		</script>
+	</body>
+</html>
