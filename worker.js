@@ -9,7 +9,7 @@ const aliases = {
 const baseUrl = "https://www.roblox.com/catalog"
 
 function constructRedirect(creatorName, searchQuery) {
-	creatorName = aliases[creatorName] || creatorName
+	creatorName = aliases[creatorName.toLowerCase()] || creatorName
 
 	let parameters = {
 		Category: 13, // Community Creations
