@@ -50,7 +50,7 @@ async function handleRequest(request) {
 	headers.append("Location", target)
 
 	return new Response("", {
-		status: 301,
+		status: 307,
 		headers: headers,
 	})
 }
