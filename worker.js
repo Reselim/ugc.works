@@ -6,6 +6,7 @@ const aliases = {
 	blu: "GuestCapone",
 	evil: "EvilArtist",
 	ivy: "Spectaqual",
+	polarcub: "polarcub_art", polar: "polarcub_art", cub: "polarcub_art",
 }
 
 const baseUrl = "https://www.roblox.com/catalog"
