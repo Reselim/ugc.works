@@ -1,5 +1,9 @@
 const aliases = {
 	neko: "nekolestial",
+	trus: "WhoToTrus",
+	ink: "inkwaves",
+	john: "JohnDrinkin",
+	blu: "GuestCapone",
 }
 
 const baseUrl = "https://www.roblox.com/catalog"
