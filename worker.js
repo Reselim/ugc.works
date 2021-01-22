@@ -1,3 +1,5 @@
+// Config
+
 const aliases = {
 	neko: "nekolestial",
 	trus: "WhoToTrus",
@@ -9,45 +11,101 @@ const aliases = {
 	polarcub: "polarcub_art", polar: "polarcub_art", cub: "polarcub_art",
 }
 
+const sortTypes = {
+	relevance: undefined,
+	favorites: 1, f: 1,
+	sales: 2, s: 2,
+	recent: 3, r: 3,
+	"price-ascending": 4, price: 4, pa: 4, c: 4, "$": 4,
+	"price-descending": 5, pd: 5, e: 5,
+}
+
+const sortAggregations = {
+	all: 5, a: 5,
+	week: 3, w: 3,
+	day: 1, d: 1,
+}
+
+// Code
+
 const baseUrl = "https://www.roblox.com/catalog"
 
-function constructRedirect(creatorName, searchQuery) {
-	creatorName = aliases[creatorName.toLowerCase()] || creatorName
+const patterns = [
+	// ugc.works/<sort>/username
+	{ regex: /^\/(.)(.?)\/([\w\d]+)\/?$/i, captures: [ "sort", "sortAggregation", "creatorName" ] },
+	{ regex: /^\/(.)(.?)\/([\w\d]+)\/([^\/])\/?$/i, captures: [ "sort", "sortAggregation", "creatorName", "searchQuery" ] },
 
+	// ugc.works/neko/username/sales/week
+	{ regex: /^\/([\w\d]+)\/?$/i, captures: [ "creatorName" ] },
+	{ regex: /^\/([\w\d]+)\/([^\/]+)\/?$/i, captures: [ "creatorName", "searchQuery" ] },
+	{ regex: /^\/([\w\d]+)\/([^\/]+)\/(\w+)\/?$/i, captures: [ "creatorName", "searchQuery", "sort" ] },
+	{ regex: /^\/([\w\d]+)\/([^\/]+)\/(\w+)\/(\w+)\/?$/i, captures: [ "creatorName", "searchQuery", "sort", "sortAggregation" ] },
+]
+
+function constructRedirectUrl(data) {
 	let parameters = {
 		Category: 13, // Community Creations
-		Subcategry: 40, // All Creations
-		CreatorName: creatorName,
+		Subcategory: 40, // All Creations
 	}
 
-	if (searchQuery) {
-		parameters.Keyword = searchQuery.replace("-", " ")
+	if (data.creatorName) {
+		let alias = aliases[data.creatorName]
+		parameters.CreatorName = alias ? alias : data.creatorName
+	}
+
+	if (data.searchQuery) {
+		parameters.Keyword = data.searchQuery.replace("-", " ")
+	}
+
+	if (data.sort && sortTypes[data.sort]) {
+		parameters.SortType = sortTypes[data.sort]
+	}
+
+	if (data.sortAggregation && sortAggregations[data.sortAggregation]) {
+		parameters.SortAggregation = sortAggregations[data.sortAggregation]
 	}
 
 	let query = new URLSearchParams(parameters)
 	return `${baseUrl}?${query.toString()}`
 }
 
-function getUrlData(urlString) {
-	let url = new URL(urlString)
-	let paths = url.pathname.split("/")
+function getUrlData(url) {
+	let pathname = (new URL(url)).pathname
+	
+	let pattern = patterns.find((pattern) => {
+		return !!pattern.regex.test(pathname)
+	})
 
-	if (paths[1]) {
-		return {
-			creatorName: paths[1],
-			searchQuery: paths[2] || null,
-		}
+	if (pattern) {
+		let data = {}
+
+		let match = pathname.match(pattern.regex)
+		pattern.captures.forEach((capture, index) => {
+			let value = match[index + 1].toLowerCase()
+			if (value.length > 0) {
+				data[capture] = value
+			}
+		})
+
+		return data
 	} else {
-		throw "Unknown creator name"
+		return null
 	}
 }
 
 async function handleRequest(request) {
 	let data = getUrlData(request.url)
-	let target = constructRedirect(data.creatorName, data.searchQuery)
+
+	if (!data) {
+		return new Response(`Unknown match for url "${request.url}"`, {
+			status: 401,
+		})
+	}
+
+	let redirect = constructRedirectUrl(data)
 
 	let headers = new Headers()
-	headers.append("Location", target)
+	headers.append("Location", redirect)
 
 	return new Response("", {
 		status: 307,
