@@ -33,7 +33,7 @@ const baseUrl = "https://www.roblox.com/catalog"
 const patterns = [
 	// ugc.works/<sort>/username
 	{ regex: /^\/(.)(.?)\/([\w\d]+)\/?$/i, captures: [ "sort", "sortAggregation", "creatorName" ] },
-	{ regex: /^\/(.)(.?)\/([\w\d]+)\/([^\/])\/?$/i, captures: [ "sort", "sortAggregation", "creatorName", "searchQuery" ] },
+	{ regex: /^\/(.)(.?)\/([\w\d]+)\/([^\/]+)\/?$/i, captures: [ "sort", "sortAggregation", "creatorName", "searchQuery" ] },
 
 	// ugc.works/neko/username/sales/week
 	{ regex: /^\/([\w\d]+)\/?$/i, captures: [ "creatorName" ] },
