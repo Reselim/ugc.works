@@ -3,7 +3,7 @@
 const aliases = {
 	neko: "nekolestial",
 	trus: "WhoToTrus",
-	ink: "inkwaves",
+	ink: { creatorName: "inkwaves", sort: "recent" },
 	john: "JohnDrinkin",
 	blu: "GuestCapone",
 	evil: "EvilArtist",
@@ -50,7 +50,16 @@ function constructRedirectUrl(data) {
 
 	if (data.creatorName) {
 		let alias = aliases[data.creatorName]
-		parameters.CreatorName = alias ? alias : data.creatorName
+
+		if (alias) {
+			if (typeof alias === "string") {
+				data = { creatorName: data }
+			}
+
+			data = Object.assign({}, data, alias)
+		}
+
+		parameters.CreatorName = data.creatorName
 	}
 
 	if (data.searchQuery) {
