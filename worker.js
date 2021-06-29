@@ -43,13 +43,13 @@ const patterns = [
 ]
 
 function constructRedirectUrl(data) {
-	let parameters = {
+	const parameters = {
 		Category: 13, // Community Creations
 		Subcategory: 40, // All Creations
 	}
 
 	if (data.creatorName) {
-		let alias = aliases[data.creatorName]
+		const alias = aliases[data.creatorName]
 
 		if (alias) {
 			if (typeof alias === "string") {
@@ -74,23 +74,23 @@ function constructRedirectUrl(data) {
 		parameters.SortAggregation = sortAggregations[data.sortAggregation]
 	}
 
-	let query = new URLSearchParams(parameters)
+	const query = new URLSearchParams(parameters)
 	return `${baseUrl}?${query.toString()}`
 }
 
 function getUrlData(url) {
-	let pathname = (new URL(url)).pathname
+	const pathname = (new URL(url)).pathname
 	
-	let pattern = patterns.find((pattern) => {
+	const pattern = patterns.find((pattern) => {
 		return !!pattern.regex.test(pathname)
 	})
 
 	if (pattern) {
-		let data = {}
+		const data = {}
 
-		let match = pathname.match(pattern.regex)
+		const match = pathname.match(pattern.regex)
 		pattern.captures.forEach((capture, index) => {
-			let value = match[index + 1].toLowerCase()
+			const value = match[index + 1].toLowerCase()
 			if (value.length > 0) {
 				data[capture] = value
 			}
@@ -103,7 +103,7 @@ function getUrlData(url) {
 }
 
 async function handleRequest(request) {
-	let data = getUrlData(request.url)
+	const data = getUrlData(request.url)
 
 	if (!data) {
 		return new Response(`Unknown match for url "${request.url}"`, {
@@ -111,9 +111,9 @@ async function handleRequest(request) {
 		})
 	}
 
-	let redirect = constructRedirectUrl(data)
+	const redirect = constructRedirectUrl(data)
 
-	let headers = new Headers()
+	const headers = new Headers()
 	headers.append("Location", redirect)
 
 	return new Response("", {
