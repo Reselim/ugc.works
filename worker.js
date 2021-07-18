@@ -1,5 +1,4 @@
 // Config
-
 const aliases = {
 	neko: "nekolestial",
 	trus: "WhoToTrus",
@@ -42,7 +41,7 @@ const patterns = [
 	{ regex: /^\/([\w\d]+)\/([^\/]+)\/(\w+)\/(\w+)\/?$/i, captures: [ "creatorName", "searchQuery", "sort", "sortAggregation" ] },
 ]
 
-function constructRedirectUrl(data) {
+async function constructRedirectUrl(data) {
 	const parameters = {
 		Category: 13, // Community Creations
 		Subcategory: 40, // All Creations
@@ -53,10 +52,19 @@ function constructRedirectUrl(data) {
 
 		if (alias) {
 			if (typeof alias === "string") {
-				data = { creatorName: data }
+				data.creatorName = alias
 			}
+			data = { ...data, ...alias }
+		}
 
-			data = Object.assign({}, data, alias)
+		// Use current username for catalog CreatorName key
+		try {
+			const res = await fetch(`https://api.roblox.com/users/get-by-username?username=${data.creatorName}`)
+			const json = await res.json();
+			data.creatorName = json.Username || data.creatorName;
+		} catch (err) {
+			// Default to provided creatorName if upstream API
+			console.error(`Failed username lookup for '${data.creatorName}': ${err}`)
 		}
 
 		parameters.CreatorName = data.creatorName
@@ -111,7 +119,7 @@ async function handleRequest(request) {
 		})
 	}
 
-	const redirect = constructRedirectUrl(data)
+	const redirect = await constructRedirectUrl(data)
 
 	const headers = new Headers()
 	headers.append("Location", redirect)
