@@ -8,6 +8,7 @@ const aliases = {
 	evil: "EvilArtist",
 	ivy: "Spectaqual",
 	polarcub: "polarcub_art",
+	alect: "LambdaCrux"
 }
 
 const sortTypes = {
